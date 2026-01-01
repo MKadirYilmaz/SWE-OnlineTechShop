@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Tech Shop</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        header {
+            background-color: #333;
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin-left: 15px;
+            font-weight: bold;
+        }
+
+        nav a:hover {
+            text-decoration: underline;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .hero {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .hero h2 {
+            margin-top: 0;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .card h3 {
+            margin-top: 0;
+            color: #333;
+        }
+
+        .card p {
+            color: #666;
+            flex-grow: 1;
+        }
+
+        .price {
+            font-weight: bold;
+            color: #28a745;
+            font-size: 1.4rem;
+            margin: 10px 0;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            text-align: center;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-success {
+            background-color: #28a745;
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+        }
+
+        .search-container {
+            margin-bottom: 2rem;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .search-input {
+            padding: 10px;
+            width: 300px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        .search-select {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        .search-btn {
+            padding: 10px 15px;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .search-btn:hover {
+            background-color: #555;
+        }
+
+        .stock-info {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        /* Dropdown CSS */
+        .dropdown {
+            position: relative;
+            display: inline-block;
+            margin-left: 15px;
+        }
+
+        .dropdown .dropbtn {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            cursor: pointer;
+            margin-left: 0;
+            /* Reset margin since parent has it */
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+            border-radius: 4px;
+        }
+
+        .dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            margin-left: 0;
+            font-weight: normal;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #f1f1f1;
+            text-decoration: none;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Online Tech Shop</h1>
+        <nav id="mainNav">
+            <!-- Navigation will be populated by JS -->
+        </nav>
+    </header>
+    <div class="container">
+        <div class="hero">
+            <h2>Welcome to the Future</h2>
+            <p>Discover the latest technology at unbeatable prices.</p>
+        </div>
+
+        <div class="search-container">
+            <select id="categorySelect" class="search-select" onchange="filterProducts()">
+                <option value="">All Categories</option>
+                <!-- Categories loaded via JS -->
+            </select>
+            <input type="text" id="searchInput" class="search-input" placeholder="Search products...">
+            <button onclick="filterProducts()" class="search-btn">Search</button>
+        </div>
+
+        <div id="products" class="grid">
+            <!-- Products will be loaded here -->
+        </div>
+    </div>
+
+    <script>
+        updateNavigation();
+        loadCategories();
+        loadProducts();
+
+        function updateNavigation() {
+            const user = JSON.parse(localStorage.getItem('user'));
+            const nav = document.getElementById('mainNav');
+
+            if (user) {
+                nav.innerHTML = `
+                    <a href="./index.html">Home</a>
+                    <a href="./cart.html">Cart</a>
+                    <div class="dropdown">
+                        <span class="dropbtn">My Account</span>
+                        <div class="dropdown-content">
+                            <a href="./orders.html">My Orders</a>
+                            <a href="./profile.html">My Informations</a>
+                        </div>
+                    </div>
+                    <a href="#" onclick="logout()">Logout</a>
+                `;
+            } else {
+                nav.innerHTML = `
+                    <a href="./index.html">Home</a>
+                    <a href="./login.html">Login</a>
+                    <a href="./register.html">Register</a>
+                `;
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('user');
+            window.location.reload();
+        }
+
+        function loadCategories() {
+            fetch('./api/categories')
+                .then(res => res.json())
+                .then(categories => {
+                    const select = document.getElementById('categorySelect');
+                    categories.forEach(cat => {
+                        const option = document.createElement('option');
+                        option.value = cat.id;
+                        option.textContent = cat.name;
+                        select.appendChild(option);
+                    });
+                })
+                .catch(err => console.error('Error loading categories:', err));
+        }
+
+        function loadProducts(url = './api/products') {
+            fetch(url)
+                .then(response => response.json())
+                .then(products => {
+                    const container = document.getElementById('products');
+                    if (products.length === 0) {
+                        container.innerHTML = '<p style="grid-column: 1/-1; text-align: center;">No products found.</p>';
+                        return;
+                    }
+                    container.innerHTML = products.map(p => `
+                        <div class="card">
+                            <h3>${p.name}</h3>
+                            <p>${p.description}</p>
+                            <div class="stock-info">Stock: ${p.stockQuantity > 0 ? p.stockQuantity : '<span style="color:red">Out of Stock</span>'}</div>
+                            <div class="price">$${p.price}</div>
+                            <button class="btn btn-success" onclick="addToCart(${p.id})" ${p.stockQuantity <= 0 ? 'disabled style="background-color:#ccc; cursor:not-allowed;"' : ''}>
+                                ${p.stockQuantity > 0 ? 'Add to Cart' : 'Out of Stock'}
+                            </button>
+                        </div>
+                    `).join('');
+                })
+                .catch(err => {
+                    console.error(err);
+                });
+        }
+
+        function filterProducts() {
+            const query = document.getElementById('searchInput').value;
+            const categoryId = document.getElementById('categorySelect').value;
+
+            let url = './api/products';
+
+            if (categoryId) {
+                // Prioritize category filtering if selected. 
+                // Note: Ideally backend should support combined filtering. 
+                // For now, if category is selected, we fetch by category.
+                // If query is also present, we might need a combined endpoint or client-side filtering.
+                // Let's implement client-side filtering for simplicity if both are present, or just one.
+                // Or better: Let's assume if category is selected we use that. Current backend structure is simple.
+                url = `./api/products/category/${categoryId}`;
+            } else if (query) {
+                url = `./api/products/search?query=${encodeURIComponent(query)}`;
+            }
+
+            // Simple client-side search refinement if both are used would be better but let's stick to API endpoints available.
+            loadProducts(url);
+        }
+
+        // Allow searching by pressing Enter
+        document.getElementById('searchInput').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                filterProducts();
+            }
+        });
+
+        async function addToCart(productId) {
+            const user = JSON.parse(localStorage.getItem('user'));
+            if (!user) {
+                alert('Please login first.');
+                window.location.href = './login.html';
+                return;
+            }
+
+            try {
+                const params = new URLSearchParams();
+                params.append('productId', productId);
+                params.append('quantity', 1);
+                params.append('username', user.username);
+
+                const response = await fetch('./api/orders/cart/add', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: params
+                });
+
+                if (response.ok) {
+                    alert('Product added to cart!');
+                } else {
+                    alert('Failed to add to cart.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+    </script>
+</body>
+
+</html>
