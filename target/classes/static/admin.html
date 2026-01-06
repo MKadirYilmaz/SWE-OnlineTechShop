@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Online Tech Shop</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        header {
+            background-color: #d9534f;
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin-left: 15px;
+            font-weight: bold;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .panel {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        h2 {
+            margin-top: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        input,
+        textarea,
+        select {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        button {
+            padding: 10px 15px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        .btn-delete {
+            background-color: #dc3545;
+            padding: 5px 10px;
+            font-size: 0.9rem;
+        }
+
+        .btn-delete:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Admin Dashboard</h1>
+        <nav>
+            <a href="./index.html">Home</a>
+            <a href="#" onclick="logout()">Logout</a>
+        </nav>
+    </header>
+
+    <div class="container">
+
+        <div class="panel">
+            <h2>Add New Product</h2>
+            <form id="addProductForm">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div class="form-group">
+                        <label>Product Name</label>
+                        <input type="text" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Price</label>
+                        <input type="number" name="price" step="0.01" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea name="description" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Stock Quantity</label>
+                    <input type="number" name="stockQuantity" required>
+                </div>
+                <div class="form-group">
+                    <label>Category (Category ID for now)</label>
+                    <input type="number" name="categoryId" value="1" required>
+                    <small>1: Electronics, 2: Books</small>
+                </div>
+                <button type="submit">Add Product</button>
+            </form>
+        </div>
+
+        <div class="panel">
+            <h2>Product List (Inventory)</h2>
+            <table id="productTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Price</th>
+                        <th>Stock</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- JS Code -->
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <script>
+        // Auth Check
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (!user || user.role !== 'ADMIN') {
+            alert('Access Denied. Admins Only.');
+            window.location.href = './index.html';
+        }
+
+        function logout() {
+            localStorage.removeItem('user');
+            window.location.href = './login.html';
+        }
+
+        // Add Product
+        document.getElementById('addProductForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+
+            // Convert Category ID to Object (Backend expects category object or we need to adjust DTO)
+            // Current backend takes Product entity which has Category object.
+            // Simplified backend trick: We need to send { ..., category: { id: ... } }
+            // Let's refactor data structure
+            const payload = {
+                name: data.name,
+                description: data.description,
+                price: parseFloat(data.price),
+                stockQuantity: parseInt(data.stockQuantity),
+                category: { id: parseInt(data.categoryId) }
+            };
+
+            try {
+                const res = await fetch('./api/products', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (res.ok) {
+                    alert('Product Added');
+                    loadProducts();
+                    e.target.reset();
+                } else {
+                    alert('Failed to add product');
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        });
+
+        // Load Products
+        async function loadProducts() {
+            const res = await fetch('./api/products');
+            const products = await res.json();
+            const tbody = document.querySelector('#productTable tbody');
+            tbody.innerHTML = products.map(p => `
+                <tr>
+                    <td>${p.id}</td>
+                    <td>${p.name}</td>
+                    <td>$${p.price}</td>
+                    <td>${p.stockQuantity}</td>
+                    <td>
+                        <button class="btn-delete" onclick="deleteProduct(${p.id})">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function deleteProduct(id) {
+            if (!confirm('Delete this product?')) return;
+            const res = await fetch('./api/products/' + id, { method: 'DELETE' });
+            if (res.ok) {
+                loadProducts();
+            } else {
+                alert('Failed to delete');
+            }
+        }
+
+        loadProducts();
+    </script>
+</body>
+
+</html>

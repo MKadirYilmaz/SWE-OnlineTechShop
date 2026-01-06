@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Orders - Online Tech Shop</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+
+        header {
+            background-color: #343a40;
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        nav a {
+            color: #f8f9fa;
+            text-decoration: none;
+            margin-left: 20px;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        nav a:hover {
+            color: #adb5bd;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 3rem auto;
+            padding: 0 1rem;
+        }
+
+        h2 {
+            margin-bottom: 2rem;
+        }
+
+        .order-card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .order-id {
+            font-weight: bold;
+            color: #555;
+        }
+
+        .order-date {
+            color: #888;
+            font-size: 0.9rem;
+        }
+
+        .order-status {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+
+        .status-CREATED {
+            background-color: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .status-APPROVED {
+            background-color: #fff3e0;
+            color: #f57c00;
+        }
+
+        .status-SHIPPED {
+            background-color: #e8f5e9;
+            color: #388e3c;
+        }
+
+        .order-items {
+            margin-top: 1rem;
+        }
+
+        .order-item-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            font-size: 0.95rem;
+        }
+
+        .order-total {
+            text-align: right;
+            margin-top: 1rem;
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: #28a745;
+        }
+
+        /* Dropdown CSS */
+        .dropdown {
+            position: relative;
+            display: inline-block;
+            margin-left: 15px;
+        }
+
+        .dropdown .dropbtn {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+            border-radius: 4px;
+        }
+
+        .dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            margin-left: 0;
+            font-weight: normal;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #f1f1f1;
+            text-decoration: none;
+            color: black;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Online Tech Shop</h1>
+        <nav>
+            <a href="./index.html">Home</a>
+            <a href="./cart.html">Cart</a>
+            <div class="dropdown">
+                <span class="dropbtn">My Account</span>
+                <div class="dropdown-content">
+                    <a href="./orders.html">My Orders</a>
+                    <a href="./profile.html">My Informations</a>
+                </div>
+            </div>
+            <a href="#" onclick="logout()">Logout</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <h2>My Orders</h2>
+        <div id="orders-list">
+            Loading orders...
+        </div>
+    </div>
+
+    <script>
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (!user) {
+            window.location.href = './login.html';
+        } else {
+            fetch('./api/orders?username=' + user.username)
+                .then(res => res.json())
+                .then(orders => {
+                    const container = document.getElementById('orders-list');
+                    if (orders.length === 0) {
+                        container.innerHTML = '<p>No orders found.</p>';
+                        return;
+                    }
+
+                    container.innerHTML = orders.map(order => `
+                        <div class="order-card">
+                            <div class="order-header">
+                                <span class="order-id">Order #${order.id}</span>
+                                <span class="order-date">${new Date(order.orderDate).toLocaleString()}</span>
+                                <span class="order-status status-${order.status}">${order.status}</span>
+                            </div>
+                            <div class="order-items">
+                                ${order.items.map(item => `
+                                    <div class="order-item-row">
+                                        <span>${item.product.name} (x${item.quantity})</span>
+                                        <span>$${(item.priceAtPurchase * item.quantity).toFixed(2)}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                            <div class="order-total">
+                                Total: $${order.totalAmount.toFixed(2)}
+                            </div>
+                        </div>
+                    `).join('');
+                })
+                .catch(e => {
+                    console.error(e);
+                })
+        }
+    </script>
+</body>
+
+</html>
