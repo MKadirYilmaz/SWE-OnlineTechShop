@@ -1,105 +1,93 @@
-# Online Teknoloji Mağazası Sistemi (Online Tech Shop)
+# Online Technology Store System (Online Tech Shop)
 
-Bu proje, modern bir e-ticaret deneyimi sunan, Spring Boot tabanlı bir **Online Teknoloji Mağazası** uygulamasıdır. Kullanıcıların teknolojik ürünleri inceleyebileceği, sepete ekleyebileceği ve sipariş verebileceği bir platform sağlar.
+This project is a Spring Boot-based Online Technology Store application that provides a modern e-commerce experience. It offers a platform where users can browse technological products, add them to their cart, and place orders.
 
-## 📋 Özellikler
+## 📋 Features
 
-*   **Kullanıcı Yönetimi:** Kayıt olma ve güvenli giriş yapma (Authentication).
-*   **Ürün Kataloğu:** Ürünleri kategorilere göre listeleme ve detaylarını görüntüleme.
-*   **Akıllı Sepet Yönetimi:** Ürünleri sepete ekleme, çıkarma ve miktar güncelleme.
-*   **Sipariş Süreci:** Stok kontrolü ile gerçek zamanlı sipariş oluşturma (Checkout).
-*   **Sipariş Takibi:** Geçmiş siparişlerin durumunu ve detaylarını görüntüleme.
-*   **Yönetim Paneli:** (Opsiyonel/Geliştirilebilir) Ürün ve stok yönetimi altyapısı.
+*   User Management: Sign up and secure login (Authentication).
+*   Product Catalog: List products by category and view details.
+*   Smart Cart Management: Add/remove items and update quantities in the cart.
+*   Order Process: Real-time order creation with stock control (Checkout).
+*   Order Tracking: View the status and details of past orders.
+*   Admin Panel: (Optional/Extensible) Product and stock management infrastructure.
 
-## 🛠 Teknoloji Yığını
+## 🛠 Technology Stack
 
-Bu proje sağlam ve ölçeklenebilir bir mimari üzerine inşa edilmiştir:
+This project is built on a robust and scalable architecture:
 
 ### Backend
-*   **Dil:** Java 17
-*   **Framework:** Spring Boot 3.5.7
-*   **Veri Erişimi:** Spring Data JPA
-*   **Validasyon:** Spring Validation
-*   **Araçlar:** Lombok, Maven
+*   Language: Java 17
+*   Framework: Spring Boot 3.5.7
+*   Data Access: Spring Data JPA
+*   Validation: Spring Validation
+*   Tools: Lombok, Maven
 
-### Veritabanı
-*   **Sistem:** MySQL 8.0+
-*   **Test Veritabanı:** Mysql Database (Testler için)
+### Database
+*   System: MySQL 8.0+
+*   Test Database: MySQL Database (For tests)
 
 ### Frontend
-*   **Temel:** HTML5, CSS3
-*   **Betik:** Vanilla JavaScript (Modern ES6+)
-*   **Tasarım:** Responsive ve kullanıcı dostu arayüz
+*   Core: HTML5, CSS3
+*   Scripting: Vanilla JavaScript (Modern ES6+)
+*   Design: Responsive and user-friendly interface
 
-## 🚀 Kurulum ve Çalıştırma
+## 🚀 Installation and Running
 
-Projeyi yerel makinenizde çalıştırmak için aşağıdaki adımları izleyin.
+Follow the steps below to run the project on your local machine.
 
-### 1. Gereksinimler
-*   Java Development Kit (JDK) 17 veya üzeri
+### 1. Prerequisites
+*   Java Development Kit (JDK) 17 or higher
 *   MySQL Server
 
-### 2. Veritabanı Yapılandırması
-MySQL sunucunuzda `swe` adında boş bir veritabanı oluşturun:
+### 2. Database Configuration
+Create an empty database named swe on your MySQL server:
 
-```sql
 CREATE DATABASE swe;
-```
 
-`src/main/resources/application.properties` dosyasını açın ve kendi veritabanı bilgilerinizi girin:
+Open the src/main/resources/application.properties file and enter your own database credentials:
 
-```properties
 spring.datasource.url=jdbc:mysql://localhost:3306/swe
-spring.datasource.username=SİZİN_KULLANICI_ADINIZ  (Örn: root)
-spring.datasource.password=SİZİN_ŞİFRENİZ
-```
+spring.datasource.username=YOUR_USERNAME  (e.g., root)
+spring.datasource.password=YOUR_PASSWORD
 
-### 3. Projeyi Başlatma
+### 3. Starting the Project
 
-Terminal veya komut satırında proje dizinine gidin ve şu komutu çalıştırın:
+Go to the project directory in your terminal or command line and run the following command:
 
-**Windows:**
-```bash
+Windows:
 ./mvnw spring-boot:run
-```
-*(Alternatif olarak `run_project.bat` dosyasına çift tıklayabilirsiniz)*
+*(Alternatively, you can double-click the run_project.bat file)*
 
-**Linux/Mac:**
-```bash
+Linux/Mac:
 ./mvnw spring-boot:run
-```
 
-Uygulama başarıyla başladığında **Port 8088** üzerinde çalışacaktır.
+Once the application starts successfully, it will run on Port 8088.
 
-## 🌐 Kullanım
+## 🌐 Usage
 
-Tarayıcınızı açın ve ana sayfaya gidin:
+Open your browser and navigate to the home page:
 
-👉 **http://localhost:8088**
+👉 http://localhost:8088
 
-*   **Giriş/Kayıt:** Sağ üstteki menüden hesabınıza giriş yapın veya yeni hesap oluşturun.
-*   **Alışveriş:** Ana sayfadaki ürünleri "Sepete Ekle" butonu ile sepetinize atın.
-*   **Sepet:** Sağ üstteki Sepet ikonuna tıklayarak sepetinizi düzenleyin ve "Satın Al" diyerek siparişi tamamlayın.
-*   **Siparişlerim:** Profil menüsünden geçmiş siparişlerinizi görüntüleyin.
+*   Login/Register: Log in to your account or create a new one from the top right menu.
+*   Shopping: Add products from the home page to your cart using the "Add to Cart" button.
+*   Cart: Click the Cart icon in the top right to manage your cart and complete the order by clicking "Checkout".
+*   My Orders: View your past orders from the profile menu.
 
-## 📁 Proje Yapısı
+## 📁 Project Structure
 
-```
 SWE-OnlineTechShop/
 ├── src/main/java/com/techshop/
-│   ├── controller/    # API İsteklerini karşılayan sınıflar
-│   ├── model/         # Veritabanı tablolarına karşılık gelen Entity'ler
-│   ├── repository/    # Veri erişim katmanı (DAO)
-│   ├── service/       # İş mantığı kuralları
-│   └── dto/           # Veri transfer objeleri
-├── frontend/          # HTML, CSS ve JS dosyaları
-└── pom.xml            # Maven bağımlılık yönetimi
-```
+│   ├── controller/    # Classes handling API requests
+│   ├── model/         # Entities corresponding to database tables
+│   ├── repository/    # Data access layer (DAO)
+│   ├── service/       # Business logic rules
+│   └── dto/           # Data transfer objects
+├── frontend/          # HTML, CSS, and JS files
+└── pom.xml            # Maven dependency management
 
-## 🧪 Testler
+## 🧪 Tests
 
-Birim testleri çalıştırmak için:
+To run unit tests:
 
-```bash
 ./mvnw test
-```
