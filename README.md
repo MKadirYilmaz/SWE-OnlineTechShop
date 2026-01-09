@@ -46,9 +46,9 @@ CREATE DATABASE swe;
 
 Open the src/main/resources/application.properties file and enter your own database credentials:
 
-spring.datasource.url=jdbc:mysql://localhost:3306/swe
-spring.datasource.username=YOUR_USERNAME  (e.g., root)
-spring.datasource.password=YOUR_PASSWORD
+*  spring.datasource.url=jdbc:mysql://localhost:3306/swe
+*  spring.datasource.username=YOUR_USERNAME  (e.g., root)
+*  spring.datasource.password=YOUR_PASSWORD
 
 ### 3. Starting the Project
 
@@ -73,18 +73,6 @@ Open your browser and navigate to the home page:
 *   Shopping: Add products from the home page to your cart using the "Add to Cart" button.
 *   Cart: Click the Cart icon in the top right to manage your cart and complete the order by clicking "Checkout".
 *   My Orders: View your past orders from the profile menu.
-
-## 📁 Project Structure
-
-SWE-OnlineTechShop/
-├── src/main/java/com/techshop/
-│   ├── controller/    # Classes handling API requests
-│   ├── model/         # Entities corresponding to database tables
-│   ├── repository/    # Data access layer (DAO)
-│   ├── service/       # Business logic rules
-│   └── dto/           # Data transfer objects
-├── frontend/          # HTML, CSS, and JS files
-└── pom.xml            # Maven dependency management
 
 ## 🧪 Tests
 
