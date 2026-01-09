@@ -35,7 +35,6 @@ public class OrderService {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
 
-        // Check if item already exists in cart
         CartItem existingItem = cart.getItems().stream()
                 .filter(item -> item.getProduct().getId().equals(productId))
                 .findFirst()
@@ -96,8 +95,7 @@ public class OrderService {
             if (product.getStockQuantity() < cartItem.getQuantity()) {
                 throw new RuntimeException("Insufficient stock for product: " + product.getName());
             }
-            
-            // Deduct stock
+
             product.setStockQuantity(product.getStockQuantity() - cartItem.getQuantity());
             productRepository.save(product);
 
@@ -117,7 +115,6 @@ public class OrderService {
         
         Order savedOrder = orderRepository.save(order);
 
-        // Clear cart
         cart.getItems().clear();
         cartRepository.save(cart);
 

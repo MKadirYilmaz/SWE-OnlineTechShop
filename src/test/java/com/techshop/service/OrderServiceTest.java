@@ -51,10 +51,9 @@ public class OrderServiceTest {
 
         when(cartRepository.save(any(Cart.class))).thenReturn(cart);
 
-        // Act
         Cart result = orderService.addToCart(username, productId, quantity);
 
-        // Assert
+
         assertNotNull(result);
         assertEquals(1, result.getItems().size());
         assertEquals(quantity, result.getItems().get(0).getQuantity());
@@ -94,5 +93,79 @@ public class OrderServiceTest {
         assertEquals(1, result.getItems().size());
         
 
+    }
+
+    @Test
+    public void testPlaceOrder_EmptyCart() {
+        // Arrange
+        String username = "user";
+        User user = new User(); user.setId(1L);
+        Cart cart = new Cart(); cart.setItems(new ArrayList<>());
+        
+        when(userService.findByUsername(username)).thenReturn(user);
+        when(cartRepository.findByUserId(1L)).thenReturn(Optional.of(cart));
+
+        // Act & Assert
+        assertThrows(RuntimeException.class, () -> orderService.placeOrder(username));
+    }
+
+    @Test
+    public void testRemoveFromCart() {
+        // Arrange
+        String username = "user";
+        Long productId = 1L;
+        User user = new User(); user.setId(1L);
+        
+        Product product = new Product(); product.setId(productId);
+        CartItem item = new CartItem(); item.setProduct(product);
+        
+        Cart cart = new Cart(); 
+        cart.setUser(user);
+        cart.setItems(new ArrayList<>());
+        cart.getItems().add(item);
+
+        when(userService.findByUsername(username)).thenReturn(user);
+        when(cartRepository.findByUserId(1L)).thenReturn(Optional.of(cart));
+        when(cartRepository.save(any(Cart.class))).thenReturn(cart);
+
+        // Act
+        Cart result = orderService.removeFromCart(username, productId);
+
+        // Assert
+        assertNotNull(result);
+        assertTrue(result.getItems().isEmpty());
+    }
+
+    @Test
+    public void testGetCart() {
+        // Arrange
+        String username = "user";
+        User user = new User(); user.setId(1L);
+        Cart cart = new Cart();
+
+        when(userService.findByUsername(username)).thenReturn(user);
+        when(cartRepository.findByUserId(1L)).thenReturn(Optional.of(cart));
+
+        // Act
+        Cart result = orderService.getCart(username);
+
+        // Assert
+        assertNotNull(result);
+    }
+
+    @Test
+    public void testGetUserOrders() {
+        // Arrange
+        String username = "user";
+        User user = new User(); user.setId(1L);
+        when(userService.findByUsername(username)).thenReturn(user);
+        when(orderRepository.findByUserId(1L)).thenReturn(new ArrayList<>());
+
+        // Act
+        java.util.List<Order> result = orderService.getUserOrders(username);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(0, result.size());
     }
 }

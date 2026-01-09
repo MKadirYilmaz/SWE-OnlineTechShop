@@ -24,8 +24,7 @@ public class DataLoader {
                                    UserService userService,
                                    UserRepository userRepository) {
         return args -> {
-            // Create Categories
-            // Create Categories
+
             Category electronics = categoryRepository.findByName("Electronics");
             if (electronics == null) {
                 electronics = new Category();
@@ -42,7 +41,7 @@ public class DataLoader {
                 categoryRepository.save(books);
             }
 
-            // Create Products
+
             if (productRepository.findByName("Smartphone X") == null) {
                 Product p1 = new Product();
                 p1.setName("Smartphone X");
@@ -73,22 +72,22 @@ public class DataLoader {
                 productRepository.save(p3);
             }
 
-            // Create Demo User
+
             try {
                 if (!userRepository.existsByUsername("user")) {
                     RegisterRequest userReq = new RegisterRequest();
                     userReq.setUsername("user");
                     userReq.setPassword("password");
-                    userReq.setFirstName("John");
-                    userReq.setLastName("Doe");
-                    userReq.setEmail("john@example.com");
-                    userReq.setAddress("123 Main St");
+                    userReq.setFirstName("Melih");
+                    userReq.setLastName("Çetinkaya");
+                    userReq.setEmail("melih@example.com");
+                    userReq.setAddress("Cbu street");
                     userService.register(userReq);
                     System.out.println("Demo user created: user / password");
                 }
             } catch (Exception e) {}
 
-            // Create Admin User
+
             try {
                 if (!userRepository.existsByUsername("admin")) {
                     User admin = new User();

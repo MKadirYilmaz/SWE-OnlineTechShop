@@ -13,6 +13,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -56,5 +57,70 @@ public class ProductServiceTest {
         // Assert
         assertNotNull(result);
         assertEquals(1L, result.getId());
+    }
+
+    @Test
+    public void testGetProductById_NotFound() {
+        // Arrange
+        when(productRepository.findById(1L)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(RuntimeException.class, () -> productService.getProductById(1L));
+    }
+
+    @Test
+    public void testGetAllProducts() {
+        // Arrange
+        Product p1 = new Product(); p1.setName("P1");
+        Product p2 = new Product(); p2.setName("P2");
+        when(productRepository.findAll()).thenReturn(java.util.Arrays.asList(p1, p2));
+
+        // Act
+        java.util.List<Product> result = productService.getAllProducts();
+
+        // Assert
+        assertEquals(2, result.size());
+    }
+
+    @Test
+    public void testSearchByName() {
+        // Arrange
+        String query = "Phone";
+        Product p1 = new Product(); p1.setName("Smart Phone");
+        when(productRepository.findByNameContainingIgnoreCase(query)).thenReturn(java.util.Collections.singletonList(p1));
+
+        // Act
+        java.util.List<Product> result = productService.searchByName(query);
+
+        // Assert
+        assertEquals(1, result.size());
+        assertEquals("Smart Phone", result.get(0).getName());
+    }
+
+    @Test
+    public void testGetByCategory() {
+        // Arrange
+        Long catId = 1L;
+        Product p1 = new Product(); p1.setName("Cat Product");
+        when(productRepository.findByCategoryId(catId)).thenReturn(java.util.Collections.singletonList(p1));
+
+        // Act
+        java.util.List<Product> result = productService.getByCategory(catId);
+
+        // Assert
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    public void testDeleteProduct() {
+        // Arrange
+        Long prodId = 1L;
+        
+        // Act
+        productService.deleteProduct(prodId);
+
+        // Assert
+        // verify(productRepository, times(1)).deleteById(prodId); // This is good but times(1) is default
+        verify(productRepository).deleteById(prodId);
     }
 }

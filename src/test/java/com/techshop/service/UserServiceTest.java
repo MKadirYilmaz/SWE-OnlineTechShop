@@ -29,7 +29,7 @@ public class UserServiceTest {
 
     @Test
     public void testRegister_Success() {
-        // Arrange
+
         RegisterRequest request = new RegisterRequest();
         request.setUsername("testuser");
         request.setPassword("password");
@@ -45,10 +45,10 @@ public class UserServiceTest {
         
         when(userRepository.save(any(User.class))).thenReturn(savedUser);
 
-        // Act
+
         User result = userService.register(request);
 
-        // Assert
+
         assertNotNull(result);
         assertEquals("testuser", result.getUsername());
         verify(cartRepository, times(1)).save(any()); // Verify cart creation
@@ -56,13 +56,71 @@ public class UserServiceTest {
 
     @Test
     public void testRegister_UsernameTaken() {
-        // Arrange
+
         RegisterRequest request = new RegisterRequest();
         request.setUsername("existing");
 
         when(userRepository.existsByUsername("existing")).thenReturn(true);
 
-        // Act & Assert
         assertThrows(RuntimeException.class, () -> userService.register(request));
+    }
+
+    @Test
+    public void testFindByUsername_Success() {
+
+        String username = "testuser";
+        User user = new User();
+        user.setUsername(username);
+
+        when(userRepository.findByUsername(username)).thenReturn(java.util.Optional.of(user));
+
+        User result = userService.findByUsername(username);
+
+        assertNotNull(result);
+        assertEquals(username, result.getUsername());
+    }
+
+    @Test
+    public void testFindByUsername_NotFound() {
+
+        String username = "unknown";
+
+        when(userRepository.findByUsername(username)).thenReturn(java.util.Optional.empty());
+
+        assertThrows(RuntimeException.class, () -> userService.findByUsername(username));
+    }
+
+    @Test
+    public void testChangePassword_Success() {
+
+        String username = "testuser";
+        String oldPass = "oldpass";
+        String newPass = "newpass";
+
+        User user = new User();
+        user.setUsername(username);
+        user.setPassword(oldPass);
+
+        when(userRepository.findByUsername(username)).thenReturn(java.util.Optional.of(user));
+
+        userService.changePassword(username, oldPass, newPass);
+
+        assertEquals(newPass, user.getPassword());
+        verify(userRepository).save(user);
+    }
+
+    @Test
+    public void testChangePassword_InvalidOldPassword() {
+        String username = "testuser";
+        String oldPass = "wrongpass";
+        String newPass = "newpass";
+
+        User user = new User();
+        user.setUsername(username);
+        user.setPassword("correctpass");
+
+        when(userRepository.findByUsername(username)).thenReturn(java.util.Optional.of(user));
+
+        assertThrows(RuntimeException.class, () -> userService.changePassword(username, oldPass, newPass));
     }
 }

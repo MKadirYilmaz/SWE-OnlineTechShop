@@ -33,7 +33,7 @@ public class UserService {
 
         User user = User.builder()
                 .username(request.getUsername())
-                .password(request.getPassword()) // Plain text password
+                .password(request.getPassword())
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
                 .email(request.getEmail())
@@ -43,7 +43,7 @@ public class UserService {
 
         User savedUser = userRepository.save(user);
         
-        // Create a cart for the new user
+
         Cart cart = new Cart();
         cart.setUser(savedUser);
         cartRepository.save(cart);
